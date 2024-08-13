@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import { router } from "@inertiajs/react";
-import { Head } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 
 export default function Test({ questions }) {
-    const [answers, setAnswers] = useState({});
+    const { data, setData, post, processing, errors } = useForm({
+        answers: {},
+    });
 
     const handleAnswer = (questionId, value) => {
-        setAnswers({ ...answers, [questionId]: value });
+        setData("answers", { ...data.answers, [questionId]: value });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        router.post("/mbti", { answers });
+        post(route("mbti.result"));
     };
 
     return (
@@ -49,13 +50,19 @@ export default function Test({ questions }) {
                                     No
                                 </label>
                             </div>
+                            {errors[`answers.${question.id}`] && (
+                                <div className="text-red-500">
+                                    {errors[`answers.${question.id}`]}
+                                </div>
+                            )}
                         </div>
                     ))}
                     <button
                         type="submit"
                         className="bg-blue-500 text-white px-4 py-2 rounded"
+                        disabled={processing}
                     >
-                        Submit
+                        {processing ? "Submitting..." : "Submit"}
                     </button>
                 </form>
             </div>
